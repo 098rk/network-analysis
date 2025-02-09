@@ -1,0 +1,42 @@
+import time
+import numpy as np
+import psutil
+import os
+
+
+def measure_time_memory(model_train_function, *args, **kwargs):
+    """
+    Measures execution time and memory usage of a model training function.
+    :param model_train_function: Function to train the model
+    :param args: Positional arguments for the function
+    :param kwargs: Keyword arguments for the function
+    :return: Execution time (seconds), Peak memory usage (MB)
+    """
+    process = psutil.Process(os.getpid())
+    start_mem = process.memory_info().rss / 1024 ** 2  # Convert to MB
+    start_time = time.time()
+
+    model_train_function(*args, **kwargs)
+
+    end_time = time.time()
+    end_mem = process.memory_info().rss / 1024 ** 2  # Convert to MB
+
+    exec_time = end_time - start_time
+    peak_memory = end_mem - start_mem
+
+    return exec_time, peak_memory
+
+
+def sample_train_function():
+    """Simulated function for training a network."""
+    np.random.seed(42)
+    data = np.random.rand(1000, 1000)
+    weights = np.random.rand(1000, 1000)
+    for _ in range(100):  # Simulate training iterations
+        data = np.dot(data, weights)
+        data = np.tanh(data)
+
+
+time_taken, memory_used = measure_time_memory(sample_train_function)
+print(f"Execution Time: {time_taken:.2f} seconds")
+print(f"Memory Usage: {memory_used:.2f} MB")
