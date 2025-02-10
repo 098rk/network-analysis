@@ -1,0 +1,56 @@
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+import numpy as np
+
+# Function to calculate metrics
+def calculate_metrics(y_true, y_pred):
+    accuracy = accuracy_score(y_true, y_pred)
+    precision = precision_score(y_true, y_pred)
+    recall = recall_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred)
+    auc = roc_auc_score(y_true, y_pred)
+    return accuracy, precision, recall, f1, auc
+
+# Example ground truth and predictions for 100-node network
+y_true_100 = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1] * 10)  # 100 nodes
+y_pred_rf_100 = np.array([0, 0, 0, 1, 0, 1, 0, 0, 0, 1] * 10)  # RF predictions
+y_pred_lr_100 = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1] * 10)  # LR predictions
+
+# Example ground truth and predictions for 500-node network
+y_true_500 = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1] * 50)  # 500 nodes
+y_pred_rf_500 = np.array([0, 0, 0, 1, 0, 1, 0, 0, 0, 1] * 50)  # RF predictions
+y_pred_lr_500 = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1] * 50)  # LR predictions
+
+# Example ground truth and predictions for 1000-node network
+y_true_1000 = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1] * 100)  # 1000 nodes
+y_pred_rf_1000 = np.array([0, 0, 0, 1, 0, 1, 0, 0, 0, 1] * 100)  # RF predictions
+y_pred_lr_1000 = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1] * 100)  # LR predictions
+
+# Calculate metrics for 100-node network
+rf_accuracy_100, rf_precision_100, rf_recall_100, rf_f1_100, rf_auc_100 = calculate_metrics(y_true_100, y_pred_rf_100)
+lr_accuracy_100, lr_precision_100, lr_recall_100, lr_f1_100, lr_auc_100 = calculate_metrics(y_true_100, y_pred_lr_100)
+
+# Calculate metrics for 500-node network
+rf_accuracy_500, rf_precision_500, rf_recall_500, rf_f1_500, rf_auc_500 = calculate_metrics(y_true_500, y_pred_rf_500)
+lr_accuracy_500, lr_precision_500, lr_recall_500, lr_f1_500, lr_auc_500 = calculate_metrics(y_true_500, y_pred_lr_500)
+
+# Calculate metrics for 1000-node network
+rf_accuracy_1000, rf_precision_1000, rf_recall_1000, rf_f1_1000, rf_auc_1000 = calculate_metrics(y_true_1000, y_pred_rf_1000)
+lr_accuracy_1000, lr_precision_1000, lr_recall_1000, lr_f1_1000, lr_auc_1000 = calculate_metrics(y_true_1000, y_pred_lr_1000)
+
+# Print results for 100-node network
+print("Random Forest (100-node):")
+print(f"Accuracy: {rf_accuracy_100:.2f}, Precision: {rf_precision_100:.2f}, Recall: {rf_recall_100:.2f}, F1: {rf_f1_100:.3f}, AUC: {rf_auc_100:.3f}")
+print("Logistic Regression (100-node):")
+print(f"Accuracy: {lr_accuracy_100:.2f}, Precision: {lr_precision_100:.2f}, Recall: {lr_recall_100:.2f}, F1: {lr_f1_100:.3f}, AUC: {lr_auc_100:.3f}")
+
+# Print results for 500-node network
+print("\nRandom Forest (500-node):")
+print(f"Accuracy: {rf_accuracy_500:.2f}, Precision: {rf_precision_500:.2f}, Recall: {rf_recall_500:.2f}, F1: {rf_f1_500:.3f}, AUC: {rf_auc_500:.3f}")
+print("Logistic Regression (500-node):")
+print(f"Accuracy: {lr_accuracy_500:.2f}, Precision: {lr_precision_500:.2f}, Recall: {lr_recall_500:.2f}, F1: {lr_f1_500:.3f}, AUC: {lr_auc_500:.3f}")
+
+# Print results for 1000-node network
+print("\nRandom Forest (1000-node):")
+print(f"Accuracy: {rf_accuracy_1000:.2f}, Precision: {rf_precision_1000:.2f}, Recall: {rf_recall_1000:.2f}, F1: {rf_f1_1000:.3f}, AUC: {rf_auc_1000:.3f}")
+print("Logistic Regression (1000-node):")
+print(f"Accuracy: {lr_accuracy_1000:.2f}, Precision: {lr_precision_1000:.2f}, Recall: {lr_recall_1000:.2f}, F1: {lr_f1_1000:.3f}, AUC: {lr_auc_1000:.3f}")
