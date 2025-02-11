@@ -1,0 +1,252 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import roc_curve, auc, confusion_matrix, precision_recall_curve
+import networkx as nx
+
+# Set style for plots
+sns.set(style="whitegrid")
+plt.rcParams["figure.figsize"] = (10, 6)
+
+# Synthetic data for demonstration
+network_sizes = [100, 500, 1000]
+models = ["Random Forest", "Logistic Regression"]
+
+# Performance metrics for Random Forest and Logistic Regression
+metrics = {
+    "Random Forest": {
+        "Accuracy": [0.80, 0.80, 0.80],
+        "Precision": [1.00, 1.00, 1.00],
+        "Recall": [0.60, 0.60, 0.60],
+        "F1 Score": [0.750, 0.750, 0.750],
+        "AUC": [0.800, 0.800, 0.800],
+        "MCC": [0.632, 0.632, 0.632],
+    },
+    "Logistic Regression": {
+        "Accuracy": [1.00, 1.00, 1.00],
+        "Precision": [1.00, 1.00, 1.00],
+        "Recall": [1.00, 1.00, 1.00],
+        "F1 Score": [1.000, 1.000, 1.000],
+        "AUC": [1.000, 1.000, 1.000],
+        "MCC": [1.000, 1.000, 1.000],
+    },
+}
+
+# Synthetic ROC curve data
+def generate_roc_data():
+    np.random.seed(42)
+    fpr_rf, tpr_rf = np.linspace(0, 1, 100), np.linspace(0, 1, 100)
+    fpr_lr, tpr_lr = np.linspace(0, 0.1, 100), np.linspace(0, 1, 100)
+    return fpr_rf, tpr_rf, fpr_lr, tpr_lr
+
+# Plot 1: ROC Curves
+def plot_roc_curves():
+    fpr_rf, tpr_rf, fpr_lr, tpr_lr = generate_roc_data()
+    plt.figure()
+    plt.plot(fpr_rf, tpr_rf, color="blue", lw=2, label="Random Forest (AUC = 0.80)")
+    plt.plot(fpr_lr, tpr_lr, color="red", lw=2, label="Logistic Regression (AUC = 1.00)")
+    plt.plot([0, 1], [0, 1], color="gray", lw=1, linestyle="--")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curves for Random Forest and Logistic Regression")
+    plt.legend(loc="lower right")
+    plt.savefig("roc_curves.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 2: Metric Comparison
+def plot_metric_comparison():
+    metrics_to_plot = ["Accuracy", "F1 Score", "AUC", "MCC"]
+    x = np.arange(len(network_sizes))
+    width = 0.35
+
+    fig, ax = plt.subplots()
+    for i, metric in enumerate(metrics_to_plot):
+        rf_vals = metrics["Random Forest"][metric]
+        lr_vals = metrics["Logistic Regression"][metric]
+        ax.bar(x - width / 2, rf_vals, width, label="Random Forest" if i == 0 else "", color="blue")
+        ax.bar(x + width / 2, lr_vals, width, label="Logistic Regression" if i == 0 else "", color="red")
+
+    ax.set_xlabel("Network Size")
+    ax.set_ylabel("Metric Value")
+    ax.set_title("Performance Metrics Comparison Across Network Sizes")
+    ax.set_xticks(x)
+    ax.set_xticklabels(network_sizes)
+    ax.legend()
+    plt.savefig("metric_comparison.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 3: Scalability Analysis
+def plot_scalability_analysis():
+    training_time = {
+        "Random Forest": [1.0, 4.46, 10.0],
+        "Logistic Regression": [0.5, 1.23, 2.0],
+    }
+    memory_usage = {
+        "Random Forest": [3.0, 6.05, 12.0],
+        "Logistic Regression": [1.5, 3.12, 6.0],
+    }
+
+    plt.figure()
+    for model in models:
+        plt.plot(network_sizes, training_time[model], label=f"{model} (Training Time)", marker="o")
+        plt.plot(network_sizes, memory_usage[model], label=f"{model} (Memory Usage)", linestyle="--", marker="s")
+    plt.xlabel("Network Size")
+    plt.ylabel("Time (s) / Memory (MB)")
+    plt.title("Scalability Analysis of Machine Learning Models")
+    plt.legend()
+    plt.savefig("scalability_analysis.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 4: Degree Distributions
+def plot_degree_distributions():
+    np.random.seed(42)
+    karate_club = nx.karate_club_graph()
+    karate_degrees = np.array([deg for _, deg in karate_club.degree()])
+
+    synthetic_degrees = {
+        "ER": np.random.poisson(50, 100),
+        "BA": np.random.zipf(2, 100),
+        "WS": np.random.normal(4, 1, 100),
+        "SBM": np.random.poisson(66, 100),
+    }
+
+    plt.figure()
+    for model, degrees in synthetic_degrees.items():
+        sns.kdeplot(degrees, label=f"{model} Model")
+    sns.kdeplot(karate_degrees, label="Zachary's Karate Club", color="black", linestyle="--")
+    plt.xlabel("Degree")
+    plt.ylabel("Density")
+    plt.title("Degree Distributions of Synthetic Networks vs. Real-World Network")
+    plt.legend()
+    plt.savefig("degree_distributions.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 5: KS Test Results
+def plot_ks_test_results():
+    ks_stats = {
+        "ER": [0.772941, 1.000000, 1.000000],
+        "BA": [0.352941, 0.352941, 0.352941],
+        "WS": [0.332941, 0.369412, 0.386412],
+        "SBM": [0.832941, 1.000000, 1.000000],
+    }
+
+    plt.figure()
+    x = np.arange(len(network_sizes))
+    width = 0.2
+    for i, (model, stats) in enumerate(ks_stats.items()):
+        plt.bar(x + i * width, stats, width, label=model)
+    plt.xlabel("Network Size")
+    plt.ylabel("KS Statistic")
+    plt.title("Kolmogorov-Smirnov Test Results Across Network Sizes")
+    plt.xticks(x + width * 1.5, network_sizes)
+    plt.legend()
+    plt.savefig("ks_test_results.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 6: Confusion Matrix Heatmaps
+def plot_confusion_matrix():
+    np.random.seed(42)
+    y_true = np.random.randint(0, 2, 100)
+    y_pred_rf = np.random.randint(0, 2, 100)
+    y_pred_lr = np.random.randint(0, 2, 100)
+
+    cm_rf = confusion_matrix(y_true, y_pred_rf)
+    cm_lr = confusion_matrix(y_true, y_pred_lr)
+
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    sns.heatmap(cm_rf, annot=True, fmt="d", cmap="Blues", ax=ax[0], cbar=False)
+    ax[0].set_title("Random Forest Confusion Matrix")
+    ax[0].set_xlabel("Predicted")
+    ax[0].set_ylabel("Actual")
+
+    sns.heatmap(cm_lr, annot=True, fmt="d", cmap="Reds", ax=ax[1], cbar=False)
+    ax[1].set_title("Logistic Regression Confusion Matrix")
+    ax[1].set_xlabel("Predicted")
+    ax[1].set_ylabel("Actual")
+
+    plt.tight_layout()
+    plt.savefig("confusion_matrix.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 7: Precision-Recall Curves
+def plot_precision_recall_curves():
+    np.random.seed(42)
+    y_true = np.random.randint(0, 2, 100)
+    y_scores_rf = np.random.rand(100)
+    y_scores_lr = np.random.rand(100)
+
+    precision_rf, recall_rf, _ = precision_recall_curve(y_true, y_scores_rf)
+    precision_lr, recall_lr, _ = precision_recall_curve(y_true, y_scores_lr)
+
+    plt.figure()
+    plt.plot(recall_rf, precision_rf, color="blue", lw=2, label="Random Forest")
+    plt.plot(recall_lr, precision_lr, color="red", lw=2, label="Logistic Regression")
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curves")
+    plt.legend()
+    plt.savefig("precision_recall_curves.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 8: Network Visualization
+def plot_network_visualization():
+    karate_club = nx.karate_club_graph()
+    plt.figure(figsize=(8, 6))
+    nx.draw(karate_club, with_labels=True, node_color="lightblue", edge_color="gray")
+    plt.title("Zachary's Karate Club Network")
+    plt.savefig("network_visualization.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 9: Modularity Comparison
+def plot_modularity_comparison():
+    modularity = {
+        "ER": [0.255, 0.108, 0.069],
+        "BA": [0.360, 0.385, 0.388],
+        "WS": [0.680, 0.841, 0.845],
+        "SBM": [0.303, 0.314, 0.337],
+    }
+
+    plt.figure()
+    x = np.arange(len(network_sizes))
+    width = 0.2
+    for i, (model, values) in enumerate(modularity.items()):
+        plt.bar(x + i * width, values, width, label=model)
+    plt.xlabel("Network Size")
+    plt.ylabel("Modularity")
+    plt.title("Modularity Comparison Across Network Models")
+    plt.xticks(x + width * 1.5, network_sizes)
+    plt.legend()
+    plt.savefig("modularity_comparison.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Plot 10: Clustering Coefficient Distribution
+def plot_clustering_coefficient_distribution():
+    np.random.seed(42)
+    clustering_coefficients = {
+        "ER": np.random.uniform(0, 0.2, 100),
+        "BA": np.random.uniform(0, 0.1, 100),
+        "WS": np.random.uniform(0.3, 0.4, 100),
+        "SBM": np.random.uniform(0.1, 0.2, 100),
+    }
+
+    plt.figure()
+    for model, coeffs in clustering_coefficients.items():
+        sns.kdeplot(coeffs, label=f"{model} Model")
+    plt.xlabel("Clustering Coefficient")
+    plt.ylabel("Density")
+    plt.title("Clustering Coefficient Distribution Across Network Models")
+    plt.legend()
+    plt.savefig("clustering_coefficient_distribution.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+# Generate all plots
+plot_roc_curves()
+plot_metric_comparison()
+plot_scalability_analysis()
+plot_degree_distributions()
+plot_ks_test_results()
+plot_confusion_matrix()
+plot_precision_recall_curves()
+plot_network_visualization()
+plot_modularity_comparison()
+plot_clustering_coefficient_distribution()
